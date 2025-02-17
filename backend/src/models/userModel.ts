@@ -9,7 +9,7 @@ interface UserDocI extends Document{
     contactNumber:string;
     password:string;
     createdAt?: Date;
-    isCorrectPassword: (candidatePassword:string)=> Promise<boolean>
+    isCorrectPassword: (candidatePassword:string, password: string)=> Promise<boolean>
 }
 
 const userSchema = new mongoose.Schema<UserDocI>({
@@ -32,14 +32,14 @@ const userSchema = new mongoose.Schema<UserDocI>({
 
 userSchema.pre('save', async function(next) {
     if(!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password! , 12);
+    this.password = await bcrypt.hash(this.password , 12);
     next();
 });
 
 
 
-userSchema.methods.isCorrectPassword = async function (candidatePassword:string){
-    return await bcrypt.compare(candidatePassword, this.password);
+userSchema.methods.isCorrectPassword = async function (candidatePassword:string, password:string){
+    return await bcrypt.compare(candidatePassword, password);
 }
 
 

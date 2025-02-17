@@ -2,8 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import {AppError} from "../utils/ErrorHandling/appError";
 
 const sendDevError = (err: AppError, res: Response) => {
-  console.log("error reutirng from dev section");
-  console.log(err);
    res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
@@ -36,7 +34,6 @@ const GlobalErrorHandler = (
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "fail";
   if (process.env.NODE_ENV === "development") {
-    console.log("hellll")
     sendDevError(err, res);
   } else if (process.env.NODE_ENV?.trim() === "production") {
     sendProductionError(err, res);
