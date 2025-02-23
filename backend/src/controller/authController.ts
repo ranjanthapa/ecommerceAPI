@@ -41,18 +41,14 @@ export const login = catchAsync(async (req, res, next) => {
   createSendToken(user, res, 200);
 });
 
-
-export const signUp = catchAsync(async (req, res, next) =>{
+export const signUp = catchAsync(async (req, res, next) => {
   const parseData = SignUpSchema.safeParse(req.body);
-  if (!parseData.success){
+  if (!parseData.success) {
     const errors = parseData.error.errors.map((error) => error.message);
     return next(new AppError(errors.join(", "), 400));
   }
   const user = await User.create(parseData.data);
   createSendToken(user, res, 201);
 });
-
-
-
 
 

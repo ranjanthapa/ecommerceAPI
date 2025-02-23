@@ -39,3 +39,8 @@ dist/**/*
 
 # ignore yarn.lock
 yarn.lock
+
+
+#ignore public folder from src
+
+/src/public
