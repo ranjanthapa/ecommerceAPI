@@ -4,6 +4,6 @@ import { createProduct } from "../controller/productController";
 
 const router = express.Router();
 
-router.post("/create", upload, createProduct);
+router.post("/create",upload,  createProduct);
 
 export default router;

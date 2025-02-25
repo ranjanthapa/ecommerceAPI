@@ -4,7 +4,7 @@ import path, { parse } from "path";
 import fs from "fs";
 import { ProductDataValidator } from "../validators/productValidator";
 import { AppError, multiError } from "../utils/ErrorHandling/appError";
-
+import crypto from "crypto";
 const uploadDir = path.join(__dirname, "../public/uploads");
 
 if (!fs.existsSync(uploadDir)) {
@@ -24,7 +24,10 @@ const storage: StorageEngine = multer.diskStorage({
     file: Express.Multer.File,
     cb: (error: Error | null, filename: string) => void
   ) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    crypto.randomBytes(12, function (err, bytes) {
+      const fn = bytes.toString("hex") + path.extname(file.originalname);
+      cb(null, fn);
+    });
   },
 });
 
@@ -33,16 +36,25 @@ const fileFilter = (
   file: Express.Multer.File,
   cb: FileFilterCallback
 ) => {
-  file.mimetype = "image";
-  console.log(req.body);
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
+  console.log(
+    "Printing the file type:",
+    allowedMimeTypes.includes(file.mimetype)
+  );
+
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    console.log("jaskjfasjf")
+   cb(new AppError("Only JPG, PNG  files are allowed!", 400));
+  }
+
   const parsedData = ProductDataValidator.safeParse(req.body);
-  console.log("We are calling the req file from file filter", req.files);
 
   if (!parsedData.success) {
-    cb(multiError(parsedData.error));
-  } else {
-    cb(null, true);
+     cb(multiError(parsedData.error));
+  }else{
+  cb(null, true);
   }
+  cb(null, true);
 };
 
 const upload = multer({
