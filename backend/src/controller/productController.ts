@@ -4,6 +4,7 @@ import { AppError, multiError } from "../utils/ErrorHandling/appError";
 import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { removeFile } from "../utils/fileUtils";
 import upload from "../middleware/multerConfig";
+import { getAll } from "./handleController";
 
 export const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -28,3 +29,4 @@ export const createProduct = catchAsync(
     });
   }
 );
+

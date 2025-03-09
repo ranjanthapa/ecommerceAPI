@@ -45,6 +45,11 @@ const handleLimitExceed = (err: MulterError) => {
   }
 };
 
+const handleCastError = (err: any) => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 401);
+};
+
 const GlobalErrorHandler = (
   err: AppError,
   req: Request,
@@ -61,6 +66,7 @@ const GlobalErrorHandler = (
     if (err instanceof MulterError && err.code === "LIMIT_UNEXPECTED_FILE") {
       error = handleLimitExceed(err);
     }
+    if (err.name === "CastError") error = handleCastError(error);
     sendProductionError(error, res);
   }
 };

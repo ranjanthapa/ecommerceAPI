@@ -4,11 +4,12 @@ interface CategoryI extends Document {
   name: string;
 }
 
-const CategorySchema = new Schema<CategoryI>({
-  name: { type: String, required: true },
-});
+const CategorySchema = new Schema<CategoryI>(
+  {
+    name: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
-
-
-const Category = model('Category', CategorySchema);
+const Category = model("Category", CategorySchema);
 export default Category;

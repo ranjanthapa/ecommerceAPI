@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-export const ProductFileValidator = z.object({
-
-});
-
-
 
 export const ProductDataValidator = z.object({
   productName: z.string({ message: "Product name is required" }),
