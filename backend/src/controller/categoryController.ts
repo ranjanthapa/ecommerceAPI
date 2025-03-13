@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/ErrorHandling/catchAsync";
 import Category from "../models/categoryModel";
-import { getAllData } from "./commonHandler";
+import { getAll } from "./handleController";
 
 export const createCategory = catchAsync(async (req: Request, res:Response, next:NextFunction)=>{
     const category = await Category.create(req.body);
@@ -11,4 +11,4 @@ export const createCategory = catchAsync(async (req: Request, res:Response, next
     })
 });
 
-export const getData = getAllData(Category);
+export const getData = getAll(Category);

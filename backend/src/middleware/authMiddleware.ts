@@ -3,40 +3,55 @@ import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { AppError } from "../utils/ErrorHandling/appError";
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
+import { User } from "../models/userModel";
+import { AUTH_MESSAGES } from "../utils/constant";
 
 interface AuthenticateRequest extends Request {
   user?: {
+    fullName: string;
+    email: string;
+    contactNumber: string;
+    password: string;
     role: string;
   };
 }
 
-export const restrictToAdmin = () => {
+export const restrictTo = (roles: string[]) => {
   return (req: AuthenticateRequest, res: Response, next: NextFunction) => {
-    if (!req.user && req.user!.role !== "admin") {
-      res.status(401).json({
-        status: "Fail",
-        message: "You do not have permission to perform this action",
-      });
+    if (!req.user || !roles.includes(req.user.role)) {
+      return next(
+        new AppError(AUTH_MESSAGES.UNAUTHORIZED_ACCESS, 401)
+      );
     }
     next();
   };
 };
 
-export const isAuthenticated = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  console.log("Printing the secret key from env",process.env.JWT_SECRET! )
-  console.log(req.headers.authorization)
+export const isAuthenticated = catchAsync(
+  async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+    let token;
+    const JWT_SECRET = process.env.JWT_SECRET?.trim() as string;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
 
-  let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
-    token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return next(new AppError(AUTH_MESSAGES.UNAUTHENTICATED, 401));
+    }
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return next(new AppError(AUTH_MESSAGES.USER_NOT_FOUND, 401));
+    }
+    if (user.changePasswordAfter(decoded.iat!)) {
+      return next(
+        new AppError(AUTH_MESSAGES.PASSWORD_CHANGED, 401)
+      );
+    }
+    req.user = user;
+    next();
   }
-  
-  if (!token){
-    return next(new AppError("Login required, please login", 401))
-  }
-  
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-  console.log("test jwt", decoded);
-  next();
-
-})
+);

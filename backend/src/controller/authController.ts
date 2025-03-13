@@ -1,5 +1,5 @@
 import catchAsync from "../utils/ErrorHandling/catchAsync";
-import {User} from "../models/userModel";
+import { User } from "../models/userModel";
 import { LoginSchema, SignUpSchema } from "../validators/authValidator";
 import { AppError } from "../utils/ErrorHandling/appError";
 import jwt, { Secret } from "jsonwebtoken";
@@ -7,19 +7,21 @@ import { ObjectId, Document } from "mongoose";
 import { Response } from "express";
 
 const signToken = (id: ObjectId) => {
-  console.log("Printing the secret key from env",process.env.JWT_SECRET! )
-  return jwt.sign({ id: id }, process.env.JWT_SECRET!, {
-    expiresIn: "90d",
-  });
+  const JWT_SECRET = process.env.JWT_SECRET?.trim() as string;
+
+  console.log(`Printing the secret key from signToken"${JWT_SECRET}"`);
+  return jwt.sign({ id: id }, JWT_SECRET, {
+    expiresIn: "1d",
+  },);
 };
 
 const createSendToken = (user: Document, res: Response, statusCode: number) => {
   const token = signToken(user._id as ObjectId);
-  console.log("Prinint token", token)
+  console.log("Token after creating", token);
 
   return res.status(statusCode).json({
     token,
-    user
+    user,
   });
 };
 
@@ -51,5 +53,3 @@ export const signUp = catchAsync(async (req, res, next) => {
   const user = await User.create(parseData.data);
   createSendToken(user, res, 201);
 });
-
-

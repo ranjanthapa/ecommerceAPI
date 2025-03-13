@@ -1,4 +1,4 @@
-import mongoose, { model, Schema , Document} from "mongoose";
+import mongoose, { model, Schema, Document } from "mongoose";
 
 import * as bcrypt from "bcryptjs";
 
@@ -7,11 +7,13 @@ interface UserDocI extends Document {
   email: string;
   contactNumber: string;
   password: string;
-  role: string,
+  role: string;
   isCorrectPassword: (
     candidatePassword: string,
     password: string
   ) => Promise<boolean>;
+
+  changePasswordAfter: (jwtTimeStamp: number) => boolean;
 }
 
 const userSchema = new Schema<UserDocI>(
@@ -27,10 +29,10 @@ const userSchema = new Schema<UserDocI>(
       select: false,
     },
     role: {
-        type: String,
-        enum: ["user", "admin"],
-        default: "user"
-    }
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   { timestamps: true }
 );
@@ -48,5 +50,13 @@ userSchema.methods.isCorrectPassword = async function (
   return await bcrypt.compare(candidatePassword, password);
 };
 
-export const User = model("User", userSchema);
+userSchema.methods.changePasswordAfter = function (jwtTimeStamp: number) {
+  if (this.updatedAt) {
+    const changeTimeStamp = Math.floor(this.updatedAt.getTime() / 1000);
+    console.log("CHange timeStamp type", typeof(changeTimeStamp))
 
+    return jwtTimeStamp < changeTimeStamp; 
+  }
+};
+
+export const User = model("User", userSchema);
