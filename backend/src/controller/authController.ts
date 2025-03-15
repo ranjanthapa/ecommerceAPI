@@ -9,7 +9,6 @@ import { Response } from "express";
 const signToken = (id: ObjectId) => {
   const JWT_SECRET = process.env.JWT_SECRET?.trim() as string;
 
-  console.log(`Printing the secret key from signToken"${JWT_SECRET}"`);
   return jwt.sign({ id: id }, JWT_SECRET, {
     expiresIn: "1d",
   },);
@@ -17,7 +16,6 @@ const signToken = (id: ObjectId) => {
 
 const createSendToken = (user: Document, res: Response, statusCode: number) => {
   const token = signToken(user._id as ObjectId);
-  console.log("Token after creating", token);
 
   return res.status(statusCode).json({
     token,

@@ -37,7 +37,7 @@ export const isAuthenticated = catchAsync(
     ) {
       token = req.headers.authorization.split(" ")[1];
     }
-
+    console.log("Printing the header", req.headers);
     if (!token) {
       return next(new AppError(AUTH_MESSAGES.UNAUTHENTICATED, 401));
     }
