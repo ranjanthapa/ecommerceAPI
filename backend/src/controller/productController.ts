@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Product } from "../models/productModel";
-import { AppError, multiError } from "../utils/ErrorHandling/appError";
+import { AppError } from "../utils/ErrorHandling/appError";
 import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { removeFile } from "../utils/fileUtils";
 import upload from "../middleware/multerConfig";

@@ -4,16 +4,22 @@ import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { Product } from "../models/productModel";
 import { APIFeature } from "../utils/apiFeatures";
 
-export const getAll = <T extends Document>(model: Model<T>) =>
+export const getAll = <T extends Document>(
+  model: Model<T>,
+  popOption?: Record<string, any>
+) =>
   catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const feature = new APIFeature(model.find(), req.query)
       .sort()
       .limitFields()
       .pagination();
-    const doc = await feature.query.populate({
-      path: "category",
-      select: "-__v",
-    });
+    let query = feature.query;
+    if (popOption) {
+      popOption.forEach((option: Record<string, any>) => {
+        query = query.populate(option);
+      });
+    }
+    const doc = await query;
 
     res.status(200).json({
       status: "success",

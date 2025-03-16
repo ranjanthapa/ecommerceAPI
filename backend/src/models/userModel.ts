@@ -2,7 +2,7 @@ import mongoose, { model, Schema, Document } from "mongoose";
 
 import * as bcrypt from "bcryptjs";
 
-interface UserDocI extends Document {
+export interface UserDocI extends Document {
   fullName: string;
   email: string;
   contactNumber: string;

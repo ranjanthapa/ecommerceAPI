@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import ValidationError from "mongoose";
-import { AppError, multiError } from "../utils/ErrorHandling/appError";
+import { AppError } from "../utils/ErrorHandling/appError";
 import { MulterError } from "multer";
-import { AUTH_MESSAGES } from "../utils/constant";
+import { MESSAGES } from "../utils/constant";
 
 const sendDevError = (err: AppError, res: Response) => {
   res.status(err.statusCode).json({
@@ -52,10 +52,10 @@ const handleCastError = (err: any) => {
 };
 
 const handleJsonWebTokenError = () =>
-  new AppError(AUTH_MESSAGES.TOKEN_INVALID, 401);
+  new AppError(MESSAGES.TOKEN_INVALID, 401);
 
 const handleTokenExpiredError = () =>
-  new AppError(AUTH_MESSAGES.TOKEN_EXPIRED, 401);
+  new AppError(MESSAGES.TOKEN_EXPIRED, 401);
 
 const GlobalErrorHandler = (
   err: AppError,
