@@ -4,19 +4,9 @@ import { AppError } from "../utils/ErrorHandling/appError";
 import jwt from "jsonwebtoken";
 import { User } from "../models/userModel";
 import { MESSAGES } from "../utils/constant";
-import { Types } from "mongoose";
-
-export interface AuthenticateRequest extends Request {
-  user?: {
-    id: string;
-    fullName: string;
-    email: string;
-    role: string;
-  };
-}
 
 export const restrictTo = (roles: string[]) => {
-  return (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return next(new AppError(MESSAGES.UNAUTHORIZED_ACCESS, 401));
     }
@@ -25,7 +15,7 @@ export const restrictTo = (roles: string[]) => {
 };
 
 export const isAuthenticated = catchAsync(
-  async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     let token;
     const JWT_SECRET = process.env.JWT_SECRET?.trim() as string;
     if (
@@ -57,9 +47,3 @@ export const isAuthenticated = catchAsync(
     next();
   }
 );
-
-// export const isAuthorizeUser = catchAsync(
-//   async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
-    
-//   }
-// );

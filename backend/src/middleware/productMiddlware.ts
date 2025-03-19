@@ -14,16 +14,18 @@ export const productFileMiddleware = (
   next();
 };
 
-export const validateMongoID = (
+export const validateMongoID = (field: "body" | "params" | "query", key: string) =>(
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  if (!mongoose.isValidObjectId(req.params.productID)) {
+  const id = req[field]?.[key];
+  if (!mongoose.isValidObjectId(id)) {
     res.status(403).json({
       status: "Failed",
       message: "Invalid object id",
     });
   }
+  console.log("Validation complete for id");
   next();
 };

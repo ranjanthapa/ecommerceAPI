@@ -2,19 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { ReviewValidator } from "../validators/reviewValidator";
 import { AppError, multiError } from "../utils/ErrorHandling/appError";
-import mongoose, { Model } from "mongoose";
 import { Review } from "../models/reviewModel";
-import { AuthenticateRequest } from "../middleware/authMiddleware";
 import { MESSAGES } from "../utils/constant";
 
 export const createReview = catchAsync(
-  async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const validateData = ReviewValidator.safeParse(req.body);
     if (!validateData.success) {
       throw multiError(validateData.error);
     }
     const productID = req.params.productID;
-    console.log("ProductID", productID);
     const data = {
       ...req.body,
       product: productID,
@@ -31,7 +28,7 @@ export const createReview = catchAsync(
 );
 
 export const updateReviewByID = catchAsync(
-  async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const review = await Review.findById(req.params.id);
     if (!review) {
       throw new AppError("Invalid id or not found", 400);
@@ -61,7 +58,7 @@ export const updateReviewByID = catchAsync(
 
 
 export const deleteReviewByID = catchAsync(
-  async (req: AuthenticateRequest, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const review = await Review.findById(req.params.id);
     if (!review) {
       throw new AppError("Invalid id or not found", 400);
