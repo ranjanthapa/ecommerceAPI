@@ -3,8 +3,6 @@ import { Product } from "../models/productModel";
 import { AppError } from "../utils/ErrorHandling/appError";
 import catchAsync from "../utils/ErrorHandling/catchAsync";
 import { removeFile } from "../utils/fileUtils";
-import upload from "../middleware/multerConfig";
-import { getAll } from "./handleController";
 
 export const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
